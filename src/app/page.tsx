@@ -1,11 +1,7 @@
-import { Header } from "@/components/landing/header";
-import { HeroSection } from "@/components/landing/hero-section";
+import { LandingPage } from "@/components/landing/main-landing";
 
 export default function Home() {
-  return (
-    <div>
-      <Header/>
-      <HeroSection/>
-    </div>
+  return ( 
+    <LandingPage/>
   );
 }

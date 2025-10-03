@@ -114,6 +114,10 @@
 
 @layer base {
   * {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--primary) / 0.3) transparent;
+  }
+  * {
     @apply border-border outline-ring/50;
   }
   body {
