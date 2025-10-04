@@ -12,6 +12,7 @@ import { Separator } from "../ui/separator"
 import { ShortenedLink } from "./shortened-url"
 import { toast } from "sonner"
 import { Skeleton } from "../ui/skeleton"
+import { LocalStorageService } from "@/lib/lc-storage"
 
 export const ShortenURLForm = () => {
   const backendURL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8080"
@@ -45,6 +46,11 @@ export const ShortenURLForm = () => {
       const { data }: { data: string } = await res.json()
 
       setShortLink(data)
+
+      const storage = LocalStorageService.getInstance()
+      const sliceLen = data.length
+      const shortCode = data.slice(sliceLen-6, sliceLen)
+      storage.push(shortCode, values.url)
 
       toast("Short link created", {
         description: "Your TinyRL is ready to copy and share.",
