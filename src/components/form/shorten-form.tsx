@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import z from "zod"
-import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card"
 import { Button } from "../ui/button"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "../ui/form"
 import { Input } from "../ui/input"
@@ -17,7 +17,6 @@ export const ShortenURLForm = () => {
   const backendURL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8080"
   const [shortLink, setShortLink] = useState("")
   const [generatingUrl, setGeneratingUrl] = useState(false)
-  const [success, setSuccess] = useState<boolean | null>(null)
   const [errorMsg, setErrorMessage] = useState("")
 
   const form = useForm<z.infer<typeof shortenUrlSchema>>({
@@ -30,7 +29,6 @@ export const ShortenURLForm = () => {
   const onSubmit = async (values: z.infer<typeof shortenUrlSchema>) => {
     setGeneratingUrl(true)
     setErrorMessage("")
-    setSuccess(null)
     const reqBody = {
       url: values.url,
     }
@@ -47,7 +45,6 @@ export const ShortenURLForm = () => {
       const { data }: { data: string } = await res.json()
 
       setShortLink(data)
-      setSuccess(true)
 
       toast("Short link created", {
         description: "Your TinyRL is ready to copy and share.",

@@ -1,4 +1,4 @@
 interface RedirectUrlData {
-  id: string;
+  short_code: string;
   url: string;
 }

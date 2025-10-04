@@ -67,7 +67,7 @@ export const ShortenedLink = ({ shortURL, loading = false }: Props) => {
           {loading ? (
             <Skeleton className="h-10 w-full" />
           ) : (
-            <Input value={shortURL} className="ring-0 hover:ring-0 focus:ring-0 focus-visible:ring-0" />
+            <Input value={shortURL} readOnly className="ring-0 hover:ring-0 focus:ring-0 focus-visible:ring-0" />
           )}
           <Separator orientation="vertical" className="mx-2 h-full" />
           <Button
