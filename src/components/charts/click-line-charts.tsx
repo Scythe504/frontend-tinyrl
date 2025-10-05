@@ -74,7 +74,7 @@ export function ChartLine({ shortCode }: {
         <CardDescription>January - June 2024</CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className="max-h-[400px] w-full min-h-[300px]">
+        <ChartContainer config={chartConfig} className="w-full min-h-[300px]">
           <LineChart
             accessibilityLayer
             data={clicksData!}

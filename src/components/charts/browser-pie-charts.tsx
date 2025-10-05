@@ -70,6 +70,8 @@ export function ChartPieLegend({ shortCode }: {
           return
         }
 
+        let otherclick_count = 0;
+
         const fmtChartData: (ClicksPerBrowser & { fill: string })[] = data.map((dt) => {
           let fillColor = ""
           let browserName = ""
@@ -93,16 +95,29 @@ export function ChartPieLegend({ shortCode }: {
               break;
             default:
               browserName = "other"
+              otherclick_count += dt.click_count
               fillColor = "var(--color-other)";
               break;
           }
 
-          return {
-            browser: browserName,
-            click_count: dt.click_count,
-            fill: fillColor
+          if (browserName !== "other") {
+            return {
+              browser: browserName,
+              click_count: dt.click_count,
+              fill: fillColor
+            }
           }
-        })
+          return null
+        }).filter(Boolean) as (ClicksPerBrowser & { fill: string })[]
+
+        if (otherclick_count > 0) {
+          fmtChartData.push({
+            browser: "other",
+            click_count: otherclick_count,
+            fill: "var(--color-other)"
+          })
+        }
+
         console.log({ fmtChartData, data })
 
         setBrowserStats(fmtChartData)
@@ -129,6 +144,7 @@ export function ChartPieLegend({ shortCode }: {
             <Pie
               data={browserStats}
               dataKey="click_count"
+              label
               nameKey={"browser"}
             />
             <ChartLegend

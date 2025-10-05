@@ -19,3 +19,7 @@ interface ClicksPerBrowser {
   browser: string;
   click_count: number;
 }
+interface TrafficFromReferrer {
+  referrer: string;
+  click_count: number;
+}
