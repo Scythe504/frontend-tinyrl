@@ -56,7 +56,7 @@ export const ShortenedLink = ({ shortURL, loading = false }: Props) => {
   }
 
   return (
-    <Card className="w-full border-0 h-full">
+    <Card className="w-full border-0 h-full shadow-transparent">
       <CardHeader>
         <CardTitle>Your Short Link is Ready!</CardTitle>
         <CardDescription>Copy and share your TinyRL anywhere.</CardDescription>

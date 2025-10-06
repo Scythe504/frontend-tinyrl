@@ -9,7 +9,7 @@ export const HeroSection = () => {
         Your Links, Your Data
       </h1>
       {/* Sub-heading */}
-      <h2 className="font-semibold lg:text-3xl md:text-xl text-sm dark:text-zinc-300 text-center">
+      <h2 className="font-semibold lg:text-3xl md:text-xl text-sm text-muted-foreground text-center">
         TinyRL lets you shorten, monitor, and optimize your URLs with real-time analytics and custom reporting.
       </h2>
     </div>

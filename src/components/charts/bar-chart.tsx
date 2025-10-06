@@ -17,49 +17,17 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
-import { toast } from "sonner"
-import { useEffect, useState } from "react"
 
 export const description = "A bar chart with a custom label"
 
-const chartConfig = {
-  click_count: {
-    label: "Redirects",
-    color: "var(--chart-1)"
-  }
-} satisfies ChartConfig
-
-export function ChartBar({ shortCode }: {
-  shortCode: string
+export function ChartBar({ shortCode, chartData, chartConfig, dataKey }: {
+  shortCode: string;
+  chartData: any[];
+  dataKey: string;
+  chartConfig: ChartConfig;
 }) {
-  const backendURL = process.env.BACKEND_URL || "http://localhost:8080"
-  const [trafficStats, setTrafficStats] = useState<TrafficFromReferrer[] | null>(null)
 
-  useEffect(() => {
-    const fn = async () => {
-      try {
-        const res = await fetch(`${backendURL}/api/analytics/${shortCode}/referrers`)
-        console.log({ res })
-        if (!res.ok) {
-          throw new Error(`Error occured while fetching ${res}`)
-        }
-        const data: TrafficFromReferrer[] = await res.json()
-        if (data.length === 0) {
-          toast("No records exist", {
-            description: "Share the link to other to aggregate data."
-          })
-          return
-        }
-
-        setTrafficStats(data)
-      } catch (error) {
-        console.error(error)
-      }
-    }
-    fn()
-  }, [shortCode])
-
-  return (trafficStats &&
+  return (chartData && chartConfig &&
     <Card>
       <CardHeader>
         <CardTitle>Bar Chart - Custom Label</CardTitle>
@@ -69,7 +37,7 @@ export function ChartBar({ shortCode }: {
         <ChartContainer config={chartConfig} className="min-h-[300px] max-h-[500px] w-full">
           <BarChart
             accessibilityLayer
-            data={trafficStats}
+            data={chartData}
             layout="vertical"
             margin={{
               right: 16,
@@ -77,7 +45,7 @@ export function ChartBar({ shortCode }: {
           >
             <CartesianGrid horizontal={false} />
             <YAxis
-              dataKey="referrer"
+              dataKey={dataKey}
               type="category"
               tickLine={false}
               tickMargin={10}
@@ -97,7 +65,7 @@ export function ChartBar({ shortCode }: {
               radius={4}
             >
               <LabelList
-                dataKey="referrer"
+                dataKey={dataKey}
                 position="insideLeft"
                 offset={8}
                 className="dark:fill-(--chart-label) font-mono"

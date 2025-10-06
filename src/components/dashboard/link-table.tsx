@@ -1,9 +1,9 @@
 "use client"
 
 import { LocalStorageService } from "@/lib/lc-storage"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useRouter } from "next/navigation"
-import { MoreHorizontal } from "lucide-react"
+import { ArrowDownNarrowWide, ArrowUpDown, ArrowUpNarrowWide, ListFilter, MoreHorizontal, MoreVertical, Plus, PlusCircle, Search, SortDesc } from "lucide-react"
 
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
@@ -16,8 +16,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { UpdateUrlDialog } from "@/components/form/update-url-dialog"
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
 import { toast } from "sonner"
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "../ui/select"
+import Link from "next/link"
+import { Input } from "../ui/input"
+import { Separator } from "../ui/separator"
 
 
 const EditButton = ({
@@ -69,19 +72,32 @@ export const LinkTable = () => {
   const [selectedShortCode, setSelectedShortCode] = useState<string | null>(null)
   const router = useRouter()
 
+  const [sortBy, setsortBy] = useState<"click" | "created">("click")
+
   const frontendUrl = process.env.NEXT_PUBLIC_URL || "http://localhost:3000"
 
   useEffect(() => {
     const storage = LocalStorageService.getInstance()
     setShortUrls(storage.get())
-  }, [])
-
-
+  }, [sortBy])
 
   const updateUrl = (shortCode: string) => {
     setSelectedShortCode(shortCode)
     setDialogOpen(true)
   }
+
+  const sortOptions = useMemo(
+    () => [
+      {
+        label: "Clicks",
+        sortBy: "click"
+      },
+      {
+        label: "Date created",
+        sortBy: "created"
+      }
+    ], [],
+  )
 
   return (
     <>
@@ -96,6 +112,51 @@ export const LinkTable = () => {
           setDialogOpen(false)
         }}
       />
+      <div className="border-b mb-2 flex justify-between items-center min-h-12">
+        <h1 className="font-bold font-mono text-2xl">
+          Links
+        </h1>
+        <Button variant={"default"} className="mb-2">
+          Create Link
+        </Button>
+      </div>
+      <div className="flex p-2 justify-between">
+        <Select value={sortBy}
+          onValueChange={(v: "click" | "created") => setsortBy(v)}
+        >
+          <SelectTrigger>
+            <ArrowUpDown /> Sort
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel>Sort</SelectLabel>
+                {sortOptions.map((opt) => (
+                  <SelectItem
+                    key={opt.sortBy}
+                    value={opt.sortBy}
+                  >
+                    <SortDesc />{opt.label}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </SelectTrigger>
+        </Select>
+        <div className="flex flex-row gap-2 items-center">
+          <div className="relative h-10 w-auto md:min-w-[300px]">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-3 text-muted-foreground z-10" size={20} />
+            <Input
+              type="text"
+              placeholder="Search..."
+              className="pl-10 pr-3 py-2 text-md w-full"
+            />
+          </div>
+          {/* Future Stuff */}
+          {/* <Separator orientation="vertical" />
+          <Button className="aspect-square" size={"icon"}>
+            <MoreVertical/>
+          </Button> */}
+        </div>
+      </div>
       <Table>
         <TableCaption>A list of your TinyURLs</TableCaption>
         <TableHeader>
@@ -103,7 +164,6 @@ export const LinkTable = () => {
             <TableHead>Short Code</TableHead>
             <TableHead>Destination</TableHead>
             <TableHead>Created At</TableHead>
-            <TableHead>Last Updated</TableHead>
             <TableHead>Analytics</TableHead>
             <TableHead>
               <span className="sr-only">
@@ -116,16 +176,17 @@ export const LinkTable = () => {
           {shortUrls?.map((s) => (
             <TableRow key={s.shortUrl} className="">
               <TableCell>{s.shortUrl}</TableCell>
-              <TableCell>{s.destUrl}</TableCell>
+              <TableCell className="max-w-[40px] truncate">{s.destUrl}</TableCell>
               <TableCell>{s.created_at}</TableCell>
-              <TableCell>{s.updated_at}</TableCell>
               <TableCell>
-                <Button
-                  className="text-left p-0"
-                  variant={"link"}
-                  onClick={() => router.push(`/dashboard/${s.shortUrl}`)}>
-                  Check Here
-                </Button>
+                <Link
+                  className="text-left p-0 underline"
+                  href={`/dashboard/${s.shortUrl}`}
+                >
+                  <p>
+                    Check Here
+                  </p>
+                </Link>
               </TableCell>
               <TableCell>
                 <EditButton

@@ -137,7 +137,7 @@ export function ChartPieLegend({ shortCode }: {
       <CardContent className="flex-1 pb-0">
         <ChartContainer
           config={chartConfig}
-          className="mx-auto aspect-square max-h-[300px] min-h-[300px]"
+          className="mx-auto min-h-[300px] w-full"
         >
           <PieChart>
             <ChartTooltip content={<ChartTooltipContent hideLabel />} />

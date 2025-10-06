@@ -69,7 +69,7 @@ export const ShortenURLForm = () => {
 
   return (
     <Card className="flex lg:flex-row flex-col w-full lg:space-x-2 space-y-2">
-      <Card id="shorten" className="border-0 w-full">
+      <Card className="border-0 w-full shadow-transparent">
         <CardHeader>
           <CardTitle>Shorten Your Link</CardTitle>
           <CardDescription>Paste a long URL below and instantly get a short, shareable link.</CardDescription>

@@ -19,7 +19,13 @@ interface ClicksPerBrowser {
   browser: string;
   click_count: number;
 }
+
 interface TrafficFromReferrer {
   referrer: string;
   click_count: number;
+}
+
+interface TrafficFromCountry {
+  country_iso_code: string;
+  click_count: string;
 }
