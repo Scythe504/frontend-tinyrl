@@ -35,7 +35,7 @@ export function ChartArea({
   showYAxis,
   className
 }: ChartAreaProps) {
-  return (
+  return (chartConfig && chartData &&
     <ChartContainer config={chartConfig} className={cn(className)}>
       <AreaChart
         accessibilityLayer
@@ -56,7 +56,7 @@ export function ChartArea({
           tickFormatter={(value) => value.slice(0, 3)}
         />
         <YAxis
-          tickLine={false}  
+          tickLine={false}
           axisLine={false}
           tick={showYAxis}
           tickMargin={8}

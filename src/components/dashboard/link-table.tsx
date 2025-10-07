@@ -15,24 +15,25 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { UpdateUrlDialog } from "@/components/form/update-url-dialog"
 import { toast } from "sonner"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "../ui/select"
 import Link from "next/link"
 import { Input } from "../ui/input"
-import { Separator } from "../ui/separator"
+import { Dialog, DialogContent, DialogHeader, DialogOverlay, DialogTitle, DialogTrigger } from "../ui/dialog"
+import { ShortenURLForm } from "../form/shorten-form"
+import { UpdateURLForm } from "../form/update-url-form"
+import { ScrollArea, ScrollBar } from "../ui/scroll-area"
 
 
 const EditButton = ({
   shortUrl,
   frontendUrl,
-  editUrlDest,
 }: {
   shortUrl: string
   frontendUrl: string
-  editUrlDest: () => void
 }) => {
   const [copied, setCopied] = useState(false)
+  const [success, setSuccess] = useState(false)
   const handleCopy = async (shortURL: string) => {
     try {
       await navigator.clipboard.writeText(shortURL)
@@ -60,7 +61,19 @@ const EditButton = ({
         <DropdownMenuItem onClick={() => handleCopy(`${frontendUrl}/${shortUrl}`)}>
           Copy TinyURL
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={editUrlDest}>Edit Destination Url</DropdownMenuItem>
+        <Dialog>
+          <DialogTrigger asChild>
+            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+              Edit Destination Url
+            </DropdownMenuItem>
+          </DialogTrigger>
+          <DialogContent className="border-0 shadow-transparent min-w-[50%] min-h-[60%] p-1 flex items-center">
+            <DialogTitle className="sr-only">Update Url Destination</DialogTitle>
+            <UpdateURLForm
+              initialCode={shortUrl}
+            />
+          </DialogContent>
+        </Dialog>
       </DropdownMenuContent>
     </DropdownMenu>
   )
@@ -68,8 +81,6 @@ const EditButton = ({
 
 export const LinkTable = () => {
   const [shortUrls, setShortUrls] = useState<ShortUrl[] | null>(null)
-  const [dialogOpen, setDialogOpen] = useState(false)
-  const [selectedShortCode, setSelectedShortCode] = useState<string | null>(null)
   const router = useRouter()
 
   const [sortBy, setsortBy] = useState<"click" | "created">("click")
@@ -80,11 +91,6 @@ export const LinkTable = () => {
     const storage = LocalStorageService.getInstance()
     setShortUrls(storage.get())
   }, [sortBy])
-
-  const updateUrl = (shortCode: string) => {
-    setSelectedShortCode(shortCode)
-    setDialogOpen(true)
-  }
 
   const sortOptions = useMemo(
     () => [
@@ -101,24 +107,23 @@ export const LinkTable = () => {
 
   return (
     <>
-      <UpdateUrlDialog
-        shortCode={selectedShortCode ?? ""}
-        open={dialogOpen}
-        onOpenChange={setDialogOpen}
-        onUpdated={() => {
-          // Refresh local storage after a successful update if needed
-          const storage = LocalStorageService.getInstance()
-          setShortUrls(storage.get())
-          setDialogOpen(false)
-        }}
-      />
       <div className="border-b mb-2 flex justify-between items-center min-h-12">
         <h1 className="font-bold font-mono text-2xl">
           Links
         </h1>
-        <Button variant={"default"} className="mb-2">
-          Create Link
-        </Button>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button>
+              Create Link
+            </Button>
+          </DialogTrigger>
+          <DialogTitle className="sr-only">
+            Create Link Form
+          </DialogTitle>
+          <DialogContent className="bg-transparent border-0 shadow-transparent min-w-[75%] p-1">
+            <ShortenURLForm />
+          </DialogContent>
+        </Dialog>
       </div>
       <div className="flex p-2 justify-between">
         <Select value={sortBy}
@@ -172,27 +177,28 @@ export const LinkTable = () => {
             </TableHead>
           </TableRow>
         </TableHeader>
-        <TableBody>
+        <TableBody className="max-h-[450px]">
           {shortUrls?.map((s) => (
             <TableRow key={s.shortUrl} className="">
               <TableCell>{s.shortUrl}</TableCell>
               <TableCell className="max-w-[40px] truncate">{s.destUrl}</TableCell>
               <TableCell>{s.created_at}</TableCell>
               <TableCell>
-                <Link
+                <Button
+                  variant={"link"}
                   className="text-left p-0 underline"
-                  href={`/dashboard/${s.shortUrl}`}
+                  onClick={() => router.push(`/dashboard/${s.shortUrl}`)}
                 >
                   <p>
                     Check Here
                   </p>
-                </Link>
+                </Button>
               </TableCell>
               <TableCell>
                 <EditButton
                   shortUrl={s.shortUrl}
                   frontendUrl={frontendUrl}
-                  editUrlDest={() => updateUrl(s.shortUrl)}
+                // editUrlDest={() => updateUrl(s.shortUrl)}
                 />
               </TableCell>
             </TableRow>

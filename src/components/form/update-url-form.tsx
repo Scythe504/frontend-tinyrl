@@ -16,10 +16,8 @@ import { updateUrlSchema } from "@/lib/zod"
 
 export function UpdateURLForm({
   initialCode,
-  onSuccess,
 }: {
   initialCode?: string
-  onSuccess?: () => void
 }) {
   const [updating, setUpdating] = useState(false)
   const [errorMsg, setErrorMessage] = useState("")
@@ -55,8 +53,6 @@ export function UpdateURLForm({
       toast("Short link updated", {
         description: "The destination URL has been updated.",
       })
-
-      onSuccess?.()
     } catch (error) {
       setErrorMessage("Failed to update URL, please try again later.")
       toast("Failed to update URL", {
