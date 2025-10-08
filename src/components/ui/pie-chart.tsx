@@ -14,7 +14,8 @@ export const description = "A pie chart with a legend"
 
 interface ChartPieProps {
   chartConfig: ChartConfig;
-  chartData: any[];
+  // @ts-nocheck
+  chartData: object[];
 }
 
 export function ChartPieLegend({

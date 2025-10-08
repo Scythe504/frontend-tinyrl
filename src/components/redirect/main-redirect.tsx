@@ -29,6 +29,7 @@ export const Redirect = ({ shortCode }: { shortCode: string }) => {
         toast.error("Redirect failed", {
           description: "We couldn't find a destination for this short link. Please try again or request a new one.",
         })
+        console.error(error)
       } finally {
         if (!cancelled) setLoading(false)
       }

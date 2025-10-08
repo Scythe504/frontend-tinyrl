@@ -3,7 +3,7 @@
 import { LocalStorageService } from "@/lib/lc-storage"
 import { useEffect, useMemo, useState } from "react"
 import { useRouter } from "next/navigation"
-import { ArrowDownNarrowWide, ArrowUpDown, ArrowUpNarrowWide, ListFilter, MoreHorizontal, MoreVertical, Plus, PlusCircle, Search, SortDesc } from "lucide-react"
+import { ArrowUpDown, MoreHorizontal, Search, SortDesc } from "lucide-react"
 
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
@@ -16,13 +16,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { toast } from "sonner"
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "../ui/select"
-import Link from "next/link"
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger } from "../ui/select"
 import { Input } from "../ui/input"
-import { Dialog, DialogContent, DialogHeader, DialogOverlay, DialogTitle, DialogTrigger } from "../ui/dialog"
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "../ui/dialog"
 import { ShortenURLForm } from "../form/shorten-form"
 import { UpdateURLForm } from "../form/update-url-form"
-import { ScrollArea, ScrollBar } from "../ui/scroll-area"
 
 
 const EditButton = ({
@@ -79,31 +77,62 @@ const EditButton = ({
   )
 }
 
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString)
+  const now = new Date()
+  const diffMs = now.getTime() - date.getTime()
+
+  // Calculate time elapsed
+  const seconds = Math.floor(diffMs / 1000)
+  const minutes = Math.floor(seconds / 60)
+  const hours = Math.floor(minutes / 60)
+  const days = Math.floor(hours / 24)
+  const months = Math.floor(days / 30)
+  const years = Math.floor(days / 365)
+
+  let timeAgo = ''
+  if (years > 0) timeAgo = `${years} year${years > 1 ? 's' : ''} ago`
+  else if (months > 0) timeAgo = `${months} month${months > 1 ? 's' : ''} ago`
+  else if (days > 0) timeAgo = `${days} day${days > 1 ? 's' : ''} ago`
+  else if (hours > 0) timeAgo = `${hours} hour${hours > 1 ? 's' : ''} ago`
+  else if (minutes > 0) timeAgo = `${minutes} minute${minutes > 1 ? 's' : ''} ago`
+  else timeAgo = 'just now'
+
+  // Format date as day-month-year
+  const day = date.getDate()
+  const monthNames = ["January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"]
+  const month = monthNames[date.getMonth()]
+  const year = date.getFullYear()
+
+  return `${day}-${month}-${year}, ${timeAgo}`
+}
+
 export const LinkTable = () => {
   const [shortUrls, setShortUrls] = useState<ShortUrl[] | null>(null)
   const router = useRouter()
 
-  const [sortBy, setsortBy] = useState<"click" | "created">("click")
+  // const [sortBy, setsortBy] = useState<"click" | "created">("click")
 
   const frontendUrl = process.env.NEXT_PUBLIC_URL || "http://localhost:3000"
 
   useEffect(() => {
     const storage = LocalStorageService.getInstance()
     setShortUrls(storage.get())
-  }, [sortBy])
+  }, [])
 
-  const sortOptions = useMemo(
-    () => [
-      {
-        label: "Clicks",
-        sortBy: "click"
-      },
-      {
-        label: "Date created",
-        sortBy: "created"
-      }
-    ], [],
-  )
+  // const sortOptions = useMemo(
+  //   () => [
+  //     {
+  //       label: "Clicks",
+  //       sortBy: "click"
+  //     },
+  //     {
+  //       label: "Date created",
+  //       sortBy: "created"
+  //     }
+  //   ], [],
+  // )
 
   return (
     <>
@@ -125,7 +154,7 @@ export const LinkTable = () => {
           </DialogContent>
         </Dialog>
       </div>
-      <div className="flex p-2 justify-between">
+      {/* <div className="flex p-2 justify-between">
         <Select value={sortBy}
           onValueChange={(v: "click" | "created") => setsortBy(v)}
         >
@@ -156,12 +185,12 @@ export const LinkTable = () => {
             />
           </div>
           {/* Future Stuff */}
-          {/* <Separator orientation="vertical" />
+      {/* <Separator orientation="vertical" />
           <Button className="aspect-square" size={"icon"}>
             <MoreVertical/>
-          </Button> */}
-        </div>
-      </div>
+          </Button>  */}
+      {/* </div> */}
+      {/* </div>  */}
       <Table>
         <TableCaption>A list of your TinyURLs</TableCaption>
         <TableHeader>
@@ -182,7 +211,7 @@ export const LinkTable = () => {
             <TableRow key={s.shortUrl} className="">
               <TableCell>{s.shortUrl}</TableCell>
               <TableCell className="max-w-[40px] truncate">{s.destUrl}</TableCell>
-              <TableCell>{s.created_at}</TableCell>
+              <TableCell>{formatDate(s.created_at)}</TableCell>
               <TableCell>
                 <Button
                   variant={"link"}

@@ -9,18 +9,35 @@ export const AnalyticsPreview = () => {
 
   const chartConfig = {
     click_count: {
-      label: "Clicks",
+      label: "Redirects",
       color: "var(--chart-1)",
     },
   } satisfies ChartConfig
 
-  const chartData: ClicksOverTime[] = [
-    { day: "2024-11-01", click_count: 195 },
-    { day: "2024-12-01", click_count: 190 },
-    { day: "2025-01-01", click_count: 150 },
-    { day: "2025-02-01", click_count: 180 },
-    { day: "2025-03-01", click_count: 220 },
-    { day: "2025-04-01", click_count: 200 },
+  const chartData: ClicksOverTime[] = [{
+    day: "2024-11-01T00:00:00Z",
+    click_count: 195
+  },
+  {
+    day: "2024-12-01T00:00:00Z",
+    click_count: 190
+  },
+  {
+    day: "2025-01-01T00:00:00Z",
+    click_count: 150
+  },
+  {
+    day: "2025-02-01T00:00:00Z",
+    click_count: 180
+  },
+  {
+    day: "2025-03-01T00:00:00Z",
+    click_count: 220
+  },
+  {
+    day: "2025-04-01T00:00:00Z",
+    click_count: 200
+  }
   ]
   return <section className="relative w-full py-24 flex flex-col items-center justify-center text-center">
     <div className="space-y-4 flex flex-col items-center">
@@ -56,6 +73,7 @@ export const AnalyticsPreview = () => {
           showYAxis={true}
           XTickCount={5}
           YTickCount={6}
+          timeRange="180d"
           className="w-full"
         />
       </div>

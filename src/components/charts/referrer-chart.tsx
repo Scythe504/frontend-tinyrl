@@ -2,8 +2,6 @@ import { useState, useEffect } from "react"
 import { toast } from "sonner"
 import { ChartConfig } from "../ui/chart"
 import { ChartBar } from "../ui/bar-chart"
-import Image from "next/image"
-import { DomainFavicon } from "../display-label-icons/favicon-url-formatter"
 
 export const ReferrerBarChart = ({ shortCode }: {
   shortCode: string
@@ -39,7 +37,7 @@ export const ReferrerBarChart = ({ shortCode }: {
       }
     }
     fn()
-  }, [shortCode])
+  }, [shortCode, backendURL])
 
   return (referrerStats &&
     <ChartBar

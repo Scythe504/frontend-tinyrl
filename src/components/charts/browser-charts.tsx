@@ -104,7 +104,7 @@ export const BrowserPieChart = ({ shortCode }: { shortCode: string }) => {
       }
     }
     fn()
-  }, [shortCode])
+  }, [shortCode, backendURL])
 
   return <div className="lg:my-5 my-1">
     {

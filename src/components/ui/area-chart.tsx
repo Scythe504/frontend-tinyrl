@@ -73,7 +73,7 @@ function formatTooltipLabel(value: string, timeRange: FilterTimeRange) {
     case "180d":
     case "365d":
       return new Intl.DateTimeFormat("en-US", { 
-        month: "long", 
+        month: "short", 
         year: "numeric" 
       }).format(date)
     default:
@@ -173,6 +173,7 @@ export function ChartArea({
           tick={showXAxis}
           ticks={getXTicks(processedData, timeRange!)}
           tickMargin={8}
+          minTickGap={1}
           tickCount={XTickCount}
           tickFormatter={(value) => formatXAxisTick(value, timeRange!)}
         />
@@ -186,7 +187,7 @@ export function ChartArea({
         <ChartTooltip
           cursor={true}
           content={
-            <ChartTooltipContent 
+            <ChartTooltipContent
               indicator="line"
               labelFormatter={(value) => formatTooltipLabel(value, timeRange!)}
             />

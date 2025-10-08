@@ -6,7 +6,7 @@ import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card"
+import { Card, CardContent } from "../ui/card"
 import { Button } from "../ui/button"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "../ui/form"
 import { Input } from "../ui/input"
@@ -21,6 +21,7 @@ export function UpdateURLForm({
 }) {
   const [updating, setUpdating] = useState(false)
   const [errorMsg, setErrorMessage] = useState("")
+  const backendURL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8080"
 
   const form = useForm<z.infer<typeof updateUrlSchema>>({
     resolver: zodResolver(updateUrlSchema),
@@ -41,14 +42,20 @@ export function UpdateURLForm({
     setErrorMessage("")
 
     try {
-      // Example:
-      // const res = await fetch(`${backendURL}/api/links/${values.code}`, {
-      //   method: "PATCH",
-      //   body: JSON.stringify({ url: values.url }),
-      //   headers: { "Content-Type": "application/json" },
-      // })
-      // if (!res.ok) throw new Error(`Failed to update: ${res.status}`)
-      // await res.json()
+      const res = await fetch(`${backendURL}/api/update-link`, {
+        method: "PATCH",
+        body: JSON.stringify({
+          "short_code": values.code,
+          "url": values.url
+        }),
+        headers: { "Content-Type": "application/json" },
+      })
+      if (!res.ok) {
+        const error = await res.json().catch(() => ({}))
+        const message = error.message || `Failed to update: ${res.status}`
+        throw new Error(message)
+      }
+      await res.json()
 
       toast("Short link updated", {
         description: "The destination URL has been updated.",

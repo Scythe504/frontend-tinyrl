@@ -1,9 +1,7 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
-import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { SeparatorHorizontal } from "lucide-react"
 
 type Palette = "default" | "scaled" | "mono" | "blue" | "green" | "amber" | "rose" | "purple" | "orange" | "teal"
 
@@ -69,7 +67,7 @@ const palettes: Record<Exclude<Palette, "default">, [string, string, string, str
 }
 
 export function ChartThemeSelect() {
-  const [value, setValue] = useState<Palette>("blue")
+  const [value, setValue] = useState<Palette>("scaled")
 
   const options = useMemo(
     () => [

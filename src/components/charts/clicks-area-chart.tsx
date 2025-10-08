@@ -1,8 +1,9 @@
 import { ChartArea } from "@/components/ui/area-chart"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { toast } from "sonner"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "../ui/card"
 import { ChartConfig } from "../ui/chart"
+import { AnimatePresence, motion } from "framer-motion"
 
 
 export const ClicksAreaChart = ({
@@ -14,6 +15,7 @@ export const ClicksAreaChart = ({
 }) => {
   const [rawClicksData, setRawClicksData] = useState<ClicksOverTime[] | null>(null)
   const [clicksData, setClicksData] = useState<ClicksOverTime[] | null>(null)
+  const [totalClicks, setTotalClicks] = useState(0)
   const backendURL = process.env.BACKEND_URL || "http://localhost:8080"
 
   // Chart configuration
@@ -25,13 +27,13 @@ export const ClicksAreaChart = ({
   } satisfies ChartConfig
 
   // Map timeRange to number of days
-  const timeRangeMap: Record<FilterTimeRange, number> = {
+  const timeRangeMap: Record<FilterTimeRange, number> = useMemo(() => ({
     '7d': 7,
     '30d': 30,
     '90d': 90,
     '180d': 180,
     '365d': 365
-  }
+  }), [])
 
   // Fetch raw clicks data from backend
   useEffect(() => {
@@ -47,7 +49,6 @@ export const ClicksAreaChart = ({
           })
           return
         }
-
         setRawClicksData(data)
       } catch (error) {
         console.error(error)
@@ -55,7 +56,7 @@ export const ClicksAreaChart = ({
     }
 
     fetchData()
-  }, [shortCode])
+  }, [shortCode, backendURL])
 
   // Filter clicks data whenever raw data or timeRange changes
   useEffect(() => {
@@ -65,22 +66,38 @@ export const ClicksAreaChart = ({
     const cutoff = new Date()
     cutoff.setDate(cutoff.getDate() - days)
 
+    let clickCount = 0;
     const filtered = rawClicksData.filter(item => new Date(item.day) >= cutoff)
+    setTotalClicks(clickCount)
+    filtered.forEach((val) => clickCount += val.click_count)
+    setTotalClicks(clickCount)
     setClicksData(filtered)
-  }, [rawClicksData, timeRange])
+  }, [rawClicksData, timeRange, timeRangeMap])
 
   return (
     <Card>
       <CardHeader className="pb-2 border-b">
-        <CardTitle className="flex flex-row items-center gap-2 text-xl">
+        <CardTitle className="flex flex-row items-center gap-2 sm:text-xl text-lg">
           <div className="w-2 h-2 aspect-square rounded-[1px] bg-chart-1"></div>
-          <h1>Redirects</h1>
+          <div>Redirects [{<AnimatePresence mode="popLayout">
+            <motion.span
+              key={totalClicks} // causes reanimation on change
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: -20, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 60, damping: 15 }}
+              className="ml-2 font-mono"
+            >
+              {totalClicks.toLocaleString()}
+            </motion.span>
+          </AnimatePresence>} ]
+          </div>
         </CardTitle>
         <CardDescription>
           Showing Redirects for the last {timeRange}
         </CardDescription>
       </CardHeader>
-      <CardContent className="min-h-[350px] w-full px-2 pt-4 sm:px-6 sm:pt-6">
+      <CardContent className="sm:px-2 sm:pt-5 p-0 mt-4.5">
         {clicksData && redirectsConfig && (
           <ChartArea
             chartConfig={redirectsConfig}
@@ -89,9 +106,9 @@ export const ClicksAreaChart = ({
             showXAxis
             timeRange={timeRange}
             showYAxis
-            XTickCount={12}
+            XTickCount={5}
             YTickCount={5}
-            className="aspect-auto h-[300px] w-full"
+            className="sm:h-[300px] min-h-[200px] w-full -translate-x-4"
           />
         )}
       </CardContent>

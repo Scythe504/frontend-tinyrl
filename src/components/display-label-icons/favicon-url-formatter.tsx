@@ -1,6 +1,6 @@
 import Image from "next/image"
 
-export const DomainFavicon = ({ url, className, h, w }: {
+export const DomainFavicon = ({ url, h, w }: {
   url: string;
   className?: string;
   h: number;

@@ -35,7 +35,7 @@ export const CountryBarChart = ({ shortCode }: {
       }
     }
     fn()
-  }, [shortCode])
+  }, [shortCode, backendURL])
 
   return <>{
     countryStats &&
