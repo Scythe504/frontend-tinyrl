@@ -13,7 +13,7 @@ export const ReferrerBarChart = ({ shortCode }: {
     }
   } satisfies ChartConfig
   const [referrerStats, setReferrerStats] = useState<TrafficFromReferrer[] | null>(null)
-  const backendURL = process.env.BACKEND_URL || "http://localhost:8080"
+  const backendURL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8080"
 
   useEffect(() => {
     const fn = async () => {
