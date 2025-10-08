@@ -11,7 +11,7 @@ export const CountryBarChart = ({ shortCode }: {
       color: "var(--chart-1)"
     }
   }
-  const backendURL = process.env.BACKEND_URL || "http://localhost:8080"
+  const backendURL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8080"
   const [countryStats, setCountryStats] = useState<TrafficFromCountry[] | null>(null)
   useEffect(() => {
     const fn = async () => {

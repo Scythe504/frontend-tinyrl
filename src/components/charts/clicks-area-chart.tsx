@@ -16,7 +16,7 @@ export const ClicksAreaChart = ({
   const [rawClicksData, setRawClicksData] = useState<ClicksOverTime[] | null>(null)
   const [clicksData, setClicksData] = useState<ClicksOverTime[] | null>(null)
   const [totalClicks, setTotalClicks] = useState(0)
-  const backendURL = process.env.BACKEND_URL || "http://localhost:8080"
+  const backendURL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8080"
 
   // Chart configuration
   const redirectsConfig = {
