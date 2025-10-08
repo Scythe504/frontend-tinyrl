@@ -26,6 +26,9 @@ interface TrafficFromReferrer {
 }
 
 interface TrafficFromCountry {
+  country_name: string;
   country_iso_code: string;
   click_count: string;
 }
+
+type FilterTimeRange = '7d' | '30d' | '90d' | '180d' | '365d'

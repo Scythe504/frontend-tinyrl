@@ -1,7 +1,7 @@
 'use client'
-import { ChartBar } from "@/components/charts/bar-chart";
-import { ChartPieLegend } from "@/components/charts/browser-pie-charts";
-import { ChartArea } from "@/components/charts/clicks-chart";
+import { ChartBar } from "@/components/ui/bar-chart";
+import { ChartPieLegend } from "@/components/ui/pie-chart";
+import { ChartArea } from "@/components/ui/area-chart";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartConfig } from "@/components/ui/chart";
@@ -12,214 +12,23 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import Animation from "../../../../public/walking.gif"
 import { FormatISOtoMonth, FormatISOtoDate } from "@/lib/utils";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { BrowserPieChart } from "@/components/charts/browser-charts";
+import { CountryBarChart } from "@/components/charts/country-chart";
+import { ReferrerBarChart } from "@/components/charts/referrer-chart";
+import { ClicksAreaChart } from "@/components/charts/clicks-area-chart";
 
 export default function AnalyticsDashboard() {
   const pathname = usePathname()
-  const shortCode = pathname.split('/').findLast((val)=> val)
-
-  const redirectsConfig = {
-    click_count: {
-      label: "Redirects",
-      color: "var(--chart-1)"
-    }
-  } satisfies ChartConfig
-
-  const countryTrafficConfig = {
-    click_count: {
-      label: "Visitors",
-      color: "var(--chart-1)"
-    }
-  }
-
-  const chartPieConfig = {
-    click_count: {
-      label: "Visitors",
-    },
-    chrome: {
-      label: "Chrome",
-      color: "var(--chart-1)",
-    },
-    safari: {
-      label: "Safari",
-      color: "var(--chart-2)",
-    },
-    firefox: {
-      label: "Firefox",
-      color: "var(--chart-3)",
-    },
-    edge: {
-      label: "Edge",
-      color: "var(--chart-4)",
-    },
-    other: {
-      label: "Other",
-      color: "var(--chart-5)",
-    },
-  } satisfies ChartConfig
-
+  const shortCode = pathname.split('/').findLast((val) => val)
+  const [timeRange, setTimeRange] = useState<FilterTimeRange>("30d")
 
   const backendURL = process.env.BACKEND_URL || "http://localhost:8080"
-  const [referrerStats, setReferrerStats] = useState<TrafficFromReferrer[] | null>(null)
-  const [countryStats, setCountryStats] = useState<TrafficFromCountry[] | null>(null)
-  const [clicksData, setClicksData] = useState<ClicksOverTime[] | null>(null)
-  const [browserStats, setBrowserStats] = useState<(ClicksPerBrowser & { fill: string })[] | null>(null)
-
-  useEffect(() => {
-    const fn = async () => {
-      try {
-        const res = await fetch(`${backendURL}/api/analytics/${shortCode}/browsers`)
-        console.log({ res })
-        if (!res.ok) {
-          throw new Error(`Error occured while fetching ${res}`)
-        }
-        const data: ClicksPerBrowser[] = await res.json()
-        if (data.length === 0) {
-          toast("No records exist", {
-            description: "Share the link to other to aggregate data."
-          })
-          return
-        }
-
-        let otherclick_count = 0;
-
-        const fmtChartData: (ClicksPerBrowser & { fill: string })[] = data.map((dt) => {
-          let fillColor = ""
-          let browserName = ""
-          switch (dt.browser.toLowerCase()) {
-            case "chrome":
-              fillColor = "var(--color-chrome)";
-              browserName = dt.browser.toLowerCase()
-              break;
-            case "safari":
-              fillColor = "var(--color-safari)";
-              browserName = dt.browser.toLowerCase()
-
-              break;
-            case "firefox":
-              browserName = dt.browser.toLowerCase()
-              fillColor = "var(--color-firefox)";
-              break;
-            case "edge":
-              browserName = dt.browser.toLowerCase()
-              fillColor = "var(--color-edge)";
-              break;
-            default:
-              browserName = "other"
-              otherclick_count += dt.click_count
-              fillColor = "var(--color-other)";
-              break;
-          }
-
-          if (browserName !== "other") {
-            return {
-              browser: browserName,
-              click_count: dt.click_count,
-              fill: fillColor
-            }
-          }
-          return null
-        }).filter(Boolean) as (ClicksPerBrowser & { fill: string })[]
-
-        if (otherclick_count > 0) {
-          fmtChartData.push({
-            browser: "other",
-            click_count: otherclick_count,
-            fill: "var(--color-other)"
-          })
-        }
-
-        console.log({ fmtChartData, data })
-
-        setBrowserStats(fmtChartData)
-      } catch (error) {
-        console.error(error)
-      }
-    }
-    fn()
-  }, [shortCode])
 
 
-  useEffect(() => {
-    const fn = async () => {
-      try {
-        const res = await fetch(`${backendURL}/api/analytics/${shortCode}/days`)
-        console.log({ res })
-        if (!res.ok) {
-          throw new Error(`Error occured while fetching ${res}`)
-        }
-        const data: ClicksOverTime[] = await res.json()
-        if (data.length === 0) {
-          toast("No records exist", {
-            description: "Share the link to other to get data."
-          })
-          return
-        }
-        const fmtClicksData: ClicksOverTime[] = data.map((dt) => {
-          return {
-            day: `${FormatISOtoMonth(dt.day)} ${FormatISOtoDate(dt.day)}`,
-            click_count: dt.click_count
-          }
-        })
 
-        console.log({ fmtClicksData })
-        setClicksData(fmtClicksData)
-      } catch (error) {
-        console.error(error)
-      }
-    }
-    fn()
-  }, [shortCode])
-
-  useEffect(() => {
-    const fn = async () => {
-      try {
-        const res = await fetch(`${backendURL}/api/analytics/${shortCode}/referrers`)
-        console.log({ res })
-        if (!res.ok) {
-          throw new Error(`Error occured while fetching ${res}`)
-        }
-        const data: TrafficFromReferrer[] = await res.json()
-        if (data.length === 0) {
-          toast("No records exist", {
-            description: "Share the link to other to aggregate data."
-          })
-          return
-        }
-
-        setReferrerStats(data)
-      } catch (error) {
-        console.error(error)
-      }
-    }
-    fn()
-  }, [shortCode])
-
-  useEffect(() => {
-    const fn = async () => {
-      try {
-        const res = await fetch(`${backendURL}/api/analytics/${shortCode}/countries`)
-        console.log({ res })
-        if (!res.ok) {
-          throw new Error(`Error occured while fetching ${res}`)
-        }
-        const data: TrafficFromCountry[] = await res.json()
-        if (data.length === 0) {
-          toast("No records exist", {
-            description: "Share the link to other to aggregate data."
-          })
-          return
-        }
-
-        setCountryStats(data)
-      } catch (error) {
-        console.error(error)
-      }
-    }
-    fn()
-  }, [shortCode])
-
-  return (shortCode && referrerStats && countryStats &&
-    <div className="sm:px-8 px-4 lg:px-32 md:px-20 py-4 md:py-4 space-y-2 w-full">
+  return (shortCode &&
+    <div className="sm:px-8 px-4 lg:px-20 md:px-12 py-4 md:py-4 space-y-2 w-full">
       <section className="flex lg:flex-row flex-col w-full justify-end gap-2 items-center">
         <h1 className="mr-auto text-xl font-mono">Analytics:[{shortCode}]</h1>
         <div className="grid grid-cols-3 gap-4 justify-between lg:w-auto w-full">
@@ -239,13 +48,13 @@ export default function AnalyticsDashboard() {
           <ChartThemeSelect />
         </div>
       </section>
-      <section className="flex flex-row gap-4 max-h-[250px] w-full justify-between">
+      <section className="flex md:flex-row flex-col gap-2 md:max-h-[350px] w-full justify-between">
         <Card className="w-full">
           <CardHeader>
             <CardTitle>
               Total Clicks
             </CardTitle>
-            <CardDescription className="hidden lg:block">
+            <CardDescription>
               The unique interactions with this TinyRL.
             </CardDescription>
           </CardHeader>
@@ -255,12 +64,12 @@ export default function AnalyticsDashboard() {
         </Card>
         <Card className="w-full">
           <CardContent>
-            {/* For tomfoolery */}
+            {/* For shits and giggles */}
             <Image
               src={Animation}
               alt="animation"
-              width={300}
-              height={250}
+              width={250}
+              height={200}
             />
           </CardContent>
         </Card>
@@ -297,24 +106,48 @@ export default function AnalyticsDashboard() {
       </section>
       <section>
         {/* Line Chart Config options */}
-        <Card className="">
-
+        <Card className="max-h-16 flex justify-center w-full">
+          <CardContent className="flex items-center">
+            <div>
+              <h1 className="text-2xl font-semibold font-mono">Filter</h1>
+            </div>
+            <Select value={timeRange} onValueChange={(v: typeof timeRange) => setTimeRange(v)}>
+              <SelectTrigger
+                className="w-[160px] rounded-lg ml-auto sm:flex"
+                aria-label="Select a value"
+              >
+                <SelectValue placeholder="Last 3 months" />
+              </SelectTrigger>
+              <SelectContent className="rounded-xl">
+                <SelectItem value='365d' className="rounded-lg">
+                  Last 1 year
+                </SelectItem>
+                <SelectItem value='180d' className="rounded-lg">
+                  Last 6 months
+                </SelectItem>
+                <SelectItem value='90d' className="rounded-lg">
+                  Last 3 months
+                </SelectItem>
+                <SelectItem value='30d' className="rounded-lg">
+                  Last 30 days
+                </SelectItem>
+                <SelectItem value='7d' className="rounded-lg">
+                  Last 7 days
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </CardContent>
         </Card>
       </section>
       <section className="sm:grid sm:grid-cols-12 space-y-2 gap-2">
         <div className="w-full col-span-8">
           {/* <ChartLine/> */}
-          {clicksData && redirectsConfig &&
-            <ChartArea
-              chartConfig={redirectsConfig}
-              chartData={clicksData}
-              cartesianGridVerticalLine={false}
-              showXAxis={true}
-              showYAxis={true}
-            />
-          }
+          <ClicksAreaChart
+            timeRange={timeRange}
+            shortCode={shortCode}
+          />
         </div>
-        <div className="w-full col-span-4">
+        <div className="w-full col-span-4 space-y-5">
           <Card>
             <CardHeader>
               <CardTitle>
@@ -325,22 +158,15 @@ export default function AnalyticsDashboard() {
               </CardDescription>
             </CardHeader>
           </Card>
-          <div className="lg:my-5 my-1"></div>
-          {chartPieConfig && browserStats &&
-            <ChartPieLegend chartConfig={chartPieConfig} chartData={browserStats} />
-          }
+          <Card>
+            <BrowserPieChart shortCode={shortCode} />
+          </Card>
         </div>
       </section>
-      <ChartBar
-        chartData={referrerStats}
-        dataKey={"referrer"}
-        chartConfig={redirectsConfig}
-      />
-      <ChartBar
-        chartData={countryStats}
-        dataKey={"country_iso_code"}
-        chartConfig={countryTrafficConfig}
-      />
+      <section className="flex md:flex-row flex-col gap-2 md:pr-2">
+        <ReferrerBarChart shortCode={shortCode} />
+        <CountryBarChart shortCode={shortCode} />
+      </section>
     </div >
   )
 } 

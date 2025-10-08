@@ -1,5 +1,5 @@
 import { ChartLine, MoveUpRight } from "lucide-react"
-import { ChartArea } from "../charts/clicks-chart"
+import { ChartArea } from "../ui/area-chart"
 import { ChartConfig } from "../ui/chart"
 import { Button } from "../ui/button"
 import Link from "next/link"
@@ -15,14 +15,13 @@ export const AnalyticsPreview = () => {
   } satisfies ChartConfig
 
   const chartData: ClicksOverTime[] = [
-    { day: "January", click_count: 920 },
-    { day: "February", click_count: 1120 },
-    { day: "March", click_count: 1020 },
-    { day: "April", click_count: 823 },
-    { day: "May", click_count: 986 },
-    { day: "June", click_count: 867 },
+    { day: "2024-11-01", click_count: 195 },
+    { day: "2024-12-01", click_count: 190 },
+    { day: "2025-01-01", click_count: 150 },
+    { day: "2025-02-01", click_count: 180 },
+    { day: "2025-03-01", click_count: 220 },
+    { day: "2025-04-01", click_count: 200 },
   ]
-
   return <section className="relative w-full py-24 flex flex-col items-center justify-center text-center">
     <div className="space-y-4 flex flex-col items-center">
       <p className="flex gap-x-2 text-muted-foreground text-base">
@@ -36,7 +35,7 @@ export const AnalyticsPreview = () => {
       </p>
       <Link
         href={"/dashboard"}
-        // TODO- PROD /dashboard/demo
+      // TODO- PROD /dashboard/demo
       >
         <Button>
           <div
@@ -55,6 +54,8 @@ export const AnalyticsPreview = () => {
           chartData={chartData}
           showXAxis={false}
           showYAxis={true}
+          XTickCount={5}
+          YTickCount={6}
           className="w-full"
         />
       </div>
