@@ -51,7 +51,7 @@ export const AnalyticsPreview = () => {
         Track clicks, sources, and trends, all in one clear, intuitive dashboard built for precision.
       </p>
       <Link
-        href={"/dashboard"}
+        href={"/dashboard/demo-code"}
       // TODO- PROD /dashboard/demo
       >
         <Button>
