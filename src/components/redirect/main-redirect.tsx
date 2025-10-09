@@ -17,7 +17,12 @@ export const Redirect = ({ shortCode }: { shortCode: string }) => {
     setLoading(true)
     const fn = async () => {
       try {
-        const res = await fetch(`${backendURL}/${shortCode}`)
+        const res = await fetch(`${backendURL}/${shortCode}`, {
+          headers: {
+            'X-Original-Referrer': document.referrer || 'direct',
+            'X-User-Agent': navigator.userAgent,
+          }
+        })
         if (!res.ok) {
           throw new Error(`Failed with status ${res.status}`)
         }
