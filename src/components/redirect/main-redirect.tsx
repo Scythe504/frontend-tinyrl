@@ -51,7 +51,7 @@ export const Redirect = ({ shortCode }: { shortCode: string }) => {
       })
       return
     }
-    window.location.href = redirectData.url
+    window.location.replace(redirectData.url)
   }
 
   return (
